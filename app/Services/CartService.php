@@ -31,13 +31,13 @@ final class CartService
         $total = 0.0;
 
         foreach ($items as $pid => $qty) {
-            $p = $products->get((int) $pid);
-            if (!$p) continue;
+            $product = $products->get((int) $pid);
+            if (!$product) continue;
 
-            $line = (float) $p->price * (int) $qty;
+            $line = (float) $product->price * (int) $qty;
 
             $rows[] = [
-                'product' => ['id' => $p->id, 'title' => $p->title, 'price' => (float) $p->price],
+                'product' => ['id' => $product->id, 'title' => $product->title, 'price' => (float) $product->price],
                 'qty' => (int) $qty,
                 'line_total' => $line,
             ];
@@ -45,6 +45,8 @@ final class CartService
             $count += (int) $qty;
             $total += $line;
         }
+
+        $total = round($total, 2);
 
         return ['items' => $rows, 'summary' => ['items_count' => $count, 'total' => $total]];
     }

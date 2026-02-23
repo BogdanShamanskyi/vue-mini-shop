@@ -1,59 +1,244 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🛒 Mini Shop Module (Laravel + Vue)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 📦 Stack
 
-## About Laravel
+-   PHP 8.2+
+-   Laravel 12
+-   MySQL
+-   Vue 3 (widget-based integration)
+-   Pinia (global cart state)
+-   Blade (server-side routing)
+-   Laravel Sail (Docker)
+-   Vite
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+------------------------------------------------------------------------
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# 🚀 Installation (Docker / Sail)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🔹 Requirements
 
-## Learning Laravel
+-   Docker
+-   Docker Compose
+-   Git
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+> Composer is not required locally if using Sail.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+------------------------------------------------------------------------
 
-## Laravel Sponsors
+## 1️⃣ Clone repository
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+``` bash
+git clone https://github.com/BogdanShamanskyi/vue-mini-shop.git
+cd vue-mini-shop
+```
 
-### Premium Partners
+------------------------------------------------------------------------
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 2️⃣ Install PHP dependencies
 
-## Contributing
+``` bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+------------------------------------------------------------------------
 
-## Code of Conduct
+## 3️⃣ Environment configuration
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+``` bash
+cp .env.example .env
+```
 
-## Security Vulnerabilities
+> Important: DB_HOST must be `mysql` (container name)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+------------------------------------------------------------------------
 
-## License
+## 4️⃣ Start Docker containers
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+``` bash
+./vendor/bin/sail up -d
+```
+
+------------------------------------------------------------------------
+
+## 5️⃣ Generate application key
+
+``` bash
+./vendor/bin/sail artisan key:generate
+```
+
+------------------------------------------------------------------------
+
+## 6️⃣ Install frontend dependencies
+
+``` bash
+./vendor/bin/sail npm install
+```
+
+------------------------------------------------------------------------
+
+## 7️⃣ Build frontend
+
+Development:
+
+``` bash
+./vendor/bin/sail npm run dev
+```
+
+Production:
+
+``` bash
+./vendor/bin/sail npm run build
+```
+
+------------------------------------------------------------------------
+
+## 8️⃣ Run migrations and seeders
+
+``` bash
+./vendor/bin/sail artisan migrate:fresh --seed
+```
+
+------------------------------------------------------------------------
+
+## 🌐 Open in browser
+
+http://localhost
+
+------------------------------------------------------------------------
+
+# 🔐 Authentication
+
+Standard Laravel authentication (Breeze Blade).
+
+Checkout and orders pages are available only for authenticated users.
+
+------------------------------------------------------------------------
+
+# 🧠 Architecture Overview
+
+## High-Level Principles
+
+-   Blade handles routing and page rendering.
+-   Vue is used as a widget layer (not SPA).
+-   Cart state is managed via Pinia (frontend) and Session (backend).
+-   Business logic is extracted into Service Layer.
+-   Validation is handled via FormRequest classes.
+-   API errors are unified via bootstrap exception configuration.
+-   Checkout process is transactional and safe against race conditions.
+
+------------------------------------------------------------------------
+
+## Layered Structure
+
+### 1️⃣ Controllers
+
+-   Thin controllers.
+-   Accept validated requests.
+-   Map input to DTOs.
+-   Call service layer.
+-   Return JSON or redirect responses.
+
+### 2️⃣ DTO Layer
+
+-   Encapsulates validated input data.
+-   Provides clean boundaries between HTTP and service layer.
+
+### 3️⃣ Service Layer
+
+-   Contains business rules.
+-   Performs stock validation.
+-   Manages cart logic.
+-   Handles transactional checkout.
+-   Independent from HTTP layer.
+
+### 4️⃣ Storage Boundary
+
+-   CartStorage interface.
+-   SessionCartStorage implementation.
+-   Allows future replacement (e.g., DB storage) without changing
+    service layer.
+
+### 5️⃣ Checkout Logic
+
+-   Wrapped in DB transaction.
+-   Uses row-level locking (`lockForUpdate()`).
+-   Prevents overselling under concurrent requests.
+-   Deducts stock atomically.
+-   Creates order + order items snapshot.
+
+------------------------------------------------------------------------
+
+# 🧩 Request Flow (Checkout)
+
+1.  User submits checkout form.
+2.  FormRequest validates input.
+3.  Controller calls CheckoutService.
+4.  Service:
+    -   Locks products.
+    -   Validates stock.
+    -   Creates order + items.
+    -   Deducts stock.
+5.  Transaction commits.
+6.  Cart session cleared.
+7.  Redirect to orders page.
+
+------------------------------------------------------------------------
+
+# 📊 API Error Handling
+
+Validation errors return unified JSON format:
+
+``` json
+{
+  "message": "Validation error",
+  "errors": {
+    "field": ["Error message"]
+  }
+}
+```
+
+Configured centrally via `bootstrap/app.php`.
+
+------------------------------------------------------------------------
+
+# 🧪 Testing
+
+Run tests:
+
+``` bash
+./vendor/bin/sail artisan test
+```
+
+------------------------------------------------------------------------
+
+# 🧹 Reset database
+
+``` bash
+./vendor/bin/sail artisan migrate:fresh --seed
+```
+
+------------------------------------------------------------------------
+
+# 🛠 Development commands
+
+Stop containers:
+
+``` bash
+./vendor/bin/sail down
+```
+
+Rebuild containers:
+
+``` bash
+./vendor/bin/sail build --no-cache
+```
+
+------------------------------------------------------------------------
+
+# 🎯 Design Decisions
+
+-   Session-based cart (as allowed by requirements).
+-   Transactional checkout with pessimistic locking.
+-   Clean service boundaries without passing Request into services.
+-   Minimal abstraction (no unnecessary repositories).
+-   Widget-based Vue integration to respect server-rendered requirement.
