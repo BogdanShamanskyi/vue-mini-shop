@@ -11,13 +11,33 @@
         <header style="display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid #eee;">
             <nav style="display:flex;gap:12px;">
                 <a href="{{ route('category.show', ['id' => 1]) }}">Catalog</a>
+                <span style="margin-right: 20px"></span>
                 @auth
                     <a href="{{ route('checkout.show') }}">Checkout</a>
                     <a href="{{ route('orders.index') }}">My Orders</a>
                 @endauth
+
+                @guest
+                    <div class="d-flex justify-end">
+                        <a href="{{ route('login') }}">Login</a>
+                        <a href="{{ route('register') }}">Register</a>
+                    </div>
+                @endguest
             </nav>
 
-            <div data-vue-root="MiniCart" data-props="{}"></div>
+            <div>
+                @auth
+                    <span>{{ auth()->user()->name }}</span>
+
+                    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                        @csrf
+                        <button type="submit">Logout</button>
+                    </form>
+                @endauth
+
+                <div data-vue-root="MiniCart" data-props="{}"></div>
+            </div>
+
         </header>
 
         <main style="padding:16px;">
