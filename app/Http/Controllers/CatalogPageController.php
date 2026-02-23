@@ -13,6 +13,10 @@ final class CatalogPageController
     {
         $category = Category::query()->findOrFail($id);
 
-        return view('category.show', compact('category'));
+        $categories = Category::query()
+            ->orderBy('title')
+            ->get(['id', 'title']);
+
+        return view('category.show', compact('category', 'categories'));
     }
 }
